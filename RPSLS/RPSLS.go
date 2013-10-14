@@ -6,13 +6,17 @@
 
 package main
 
-import "fmt"
-var patterns = []string{"NULL", "Scissors","Paper", "Rock", "Lizard", "Spock"}
+import ("fmt"
+		"math/rand"
+		"time"
+)
+var patterns = []string{"NULL", "Scissors","Paper", "Rock", "Lizard", "Spock", "BuffeOops!"}
 
 func main(){
 	fmt.Println("Welcome to Rock-paper-scissors-lizard-spock")
 	fmt.Println("Modes Available:")
-	fmt.Println("1.\tTwo Players")
+	fmt.Println("1.\tPlayer Versus AI")
+	fmt.Println("2.\tTwo Players")
 	fmt.Println("0.\tExit Game")
 	fmt.Print("Please select a game mode:")
 	var mode int;
@@ -20,7 +24,8 @@ func main(){
 	switch mode {
 	default: fmt.Println("Error->Invalid Selection")
 	case 0: break
-	case 1: modeTwoPlayers()
+	case 1: modeAI()
+	case 2: modeTwoPlayers()
 	}
 }
 func printSelections(){
@@ -46,9 +51,28 @@ func modeTwoPlayers(){
 	result = judgeResult(p1, p2, true)
 	// Print result
 	switch result{
-	case -1: fmt.Println("Player two win")
+	case -1: fmt.Println("Player two wins")
 	case 0 : fmt.Println("Tie")
-	case 1 : fmt.Println("Player one win")
+	case 1 : fmt.Println("Player one wins")
+	}
+}
+func modeAI(){
+	var p1, p2, result int
+	r := rand.New(rand.NewSource(time.Now().UTC().UnixNano()))	// Instantiate an Rand instance and randomize
+	// Ask for input
+	printSelections()
+	fmt.Print("Please enter your choice:")
+	fmt.Scanf("%d", &p1)
+	// Generate AI's choice
+	p2 = r.Intn(5) + 1;
+	fmt.Println("AI's choice is", patterns[p2])
+	// Judge result
+	result = judgeResult(p1, p2, true)
+	// Print result
+	switch result{
+	case -1: fmt.Println("AI wins")
+	case 0 : fmt.Println("Tie")
+	case 1 : fmt.Println("You win!")
 	}
 }
 func judgeResult(p1 int, p2 int, autoDisplay bool) int{

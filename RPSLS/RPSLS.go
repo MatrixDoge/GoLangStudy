@@ -13,19 +13,22 @@ import ("fmt"
 var patterns = []string{"NULL", "Scissors","Paper", "Rock", "Lizard", "Spock", "BuffeOops!"}
 
 func main(){
-	fmt.Println("Welcome to Rock-paper-scissors-lizard-spock")
-	fmt.Println("Modes Available:")
-	fmt.Println("1.\tPlayer Versus AI")
-	fmt.Println("2.\tTwo Players")
-	fmt.Println("0.\tExit Game")
-	fmt.Print("Please select a game mode:")
-	var mode int;
-	fmt.Scanf("%d", &mode);
-	switch mode {
-	default: fmt.Println("Error->Invalid Selection")
-	case 0: break
-	case 1: modeAI()
-	case 2: modeTwoPlayers()
+	done := false
+	for done == false{
+		fmt.Println("Welcome to Rock-paper-scissors-lizard-spock")
+		fmt.Println("Modes Available:")
+		fmt.Println("1.\tPlayer Versus AI")
+		fmt.Println("2.\tTwo Players")
+		fmt.Println("0.\tExit Game")
+		fmt.Print("Please select a game mode:")
+		var mode int;
+		fmt.Scanf("%d", &mode);
+		switch mode {
+		default: fmt.Println("Error->Invalid Selection")
+		case 0: done = true			// Exit Game
+		case 1: modeAI()
+		case 2: modeTwoPlayers()
+		}
 	}
 }
 func printSelections(){

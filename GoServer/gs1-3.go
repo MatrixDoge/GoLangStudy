@@ -4,7 +4,6 @@
  * */
 package main
 import(
-	"fmt"
 	"html/template"
 	"io/ioutil"
 	"net/http"
@@ -27,6 +26,15 @@ func loadPage(title string) (*Page, error) {
 	return &Page{Title: title, Body: body}, nil
 }
 func saveHandler(w http.ResponseWriter, r *http.Request) {
+    title := r.URL.Path[len("/save/"):]
+    body := r.FormValue("body")
+    p := &Page{Title: title, Body: []byte(body)}
+    err := p.save()
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    http.Redirect(w, r, "/view/"+title, http.StatusFound)
 }
 func editHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/edit/"):]
@@ -34,17 +42,21 @@ func editHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		p = &Page{Title: title}
 	}
-	fmt.Fprintf(w, "<h1>Editing %s</h1>" + 
-	"<form action=\"/save/%s\" method=\"POST\">"+
-	"<textarea name=\"body\">%s</textarea><br />"+
-	"<input type=\"submit\" value=\"save\">"+
-	"</form>", 
-	p.Title, p.Title, p.Body)
+	renderTemplate(w, "edit", p)
 }
 func viewHandler(w http.ResponseWriter, r *http.Request) {
 	title := r.URL.Path[len("/view/"):]
-	p, _ := loadPage(title)
-	fmt.Fprintf(w, "<h1>%s</h1><div>%s</div>", p.Title, p.Body)
+	p, err := loadPage(title)
+	if err != nil {
+		http.Redirect(w, r, "/edit/" + title, http.StatusFound)
+		return
+	}
+	renderTemplate(w, "view", p)
+}
+
+func renderTemplate(w http.ResponseWriter, tmpl string, p *Page) {
+	t, _ := template.ParseFiles(tmpl + ".html")
+	t.Execute(w, p)
 }
 func main() {
 	http.HandleFunc("/view/", viewHandler)
